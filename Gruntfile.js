@@ -24,6 +24,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-compass');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
 
@@ -64,6 +65,7 @@ module.exports = function(grunt) {
       ]
 
     },
+
 
     // -------------------------------------------------------------------------
     // COMPASS / SASS / SCSS
@@ -154,10 +156,43 @@ module.exports = function(grunt) {
           'src/scripts/**/*.js'
         ],
         tasks: [
+          'jshint:develop',
           'copy:develop',
           'index:develop'
         ]
       }
+
+    },
+
+
+    // -------------------------------------------------------------------------
+    // JSHINT CODE QUALITY
+    // -------------------------------------------------------------------------
+
+    jshint: {
+
+      options: {
+        reporter: require('jshint-stylish'),
+
+        globals: {
+
+        },
+
+        curly: true,
+        eqeqeq: true,
+        forin: true,
+        futurehostile: true,
+        globalstrict: true,
+        latedef: true,
+        undef: true,
+        unused: true,
+
+        browser: true
+      },
+
+      develop: [
+        '<%= files_internal.scripts %>'
+      ]
 
     },
 
