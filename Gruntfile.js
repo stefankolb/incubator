@@ -24,6 +24,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-compass');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
 
   /**
@@ -120,6 +121,48 @@ module.exports = function(grunt) {
 
 
     // -------------------------------------------------------------------------
+    // WATCH / DELTA
+    // -------------------------------------------------------------------------
+
+    delta: {
+
+      options: {
+        livereload: true,
+        spawn: false
+      },
+
+      config: {
+        files: [
+          'app.config.js'
+        ],
+        tasks: [
+          'develop'
+        ]
+      },
+
+      html: {
+        files: [
+          'src/index.html'
+        ],
+        tasks: [
+          'index:develop'
+        ]
+      },
+
+      js: {
+        files: [
+          'src/scripts/**/*.js'
+        ],
+        tasks: [
+          'copy:develop',
+          'index:develop'
+        ]
+      }
+
+    },
+
+
+    // -------------------------------------------------------------------------
     // INDEX
     // -------------------------------------------------------------------------
 
@@ -157,7 +200,11 @@ module.exports = function(grunt) {
   // SIMPLE TASKS
   // ---------------------------------------------------------------------------
 
-  grunt.registerTask('watch', [ ]);
+  grunt.renameTask('watch', 'delta');
+  grunt.registerTask('watch', [
+    'develop',
+    'delta'
+  ]);
 
   grunt.registerTask('develop', [
     'clean:develop',
