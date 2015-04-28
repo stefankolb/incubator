@@ -21,7 +21,9 @@ module.exports = function(grunt) {
   // Note: Install new modules by adding them to 'package.json' file located
   //       at the root level and do 'npm install' in the terminal afterwards.
 
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-compass');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
 
   /**
@@ -51,6 +53,18 @@ module.exports = function(grunt) {
   var _taskConfig = {
 
     // -------------------------------------------------------------------------
+    // CLEAN
+    // -------------------------------------------------------------------------
+
+    clean: {
+
+      develop: [
+        '<%= dir.develop %>'
+      ]
+
+    },
+
+    // -------------------------------------------------------------------------
     // COMPASS / SASS / SCSS
     // -------------------------------------------------------------------------
 
@@ -78,6 +92,30 @@ module.exports = function(grunt) {
         }
       }
 
+    },
+
+
+    // -------------------------------------------------------------------------
+    // COPY
+    // -------------------------------------------------------------------------
+
+    copy: {
+
+      develop: {
+        files: [
+          {
+            cwd: '.',
+            src: [
+              '<%= files_external.scripts %>',
+              '<%= files_internal.scripts %>'
+            ],
+            dest: '<%= dir.develop %>/scripts',
+            expand: true,
+            flatten: true
+          }
+        ]
+      }
+
     }
 
   };
@@ -100,7 +138,9 @@ module.exports = function(grunt) {
   grunt.registerTask('watch', [ ]);
 
   grunt.registerTask('develop', [
-    'compass:develop'
+    'clean:develop',
+    'compass:develop',
+    'copy:develop'
   ]);
 
   grunt.registerTask('compile', [ ]);

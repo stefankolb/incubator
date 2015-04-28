@@ -33,7 +33,7 @@ module.exports = {
   files_internal: {
 
     scripts: [
-
+      'src/scripts/app.js'
     ],
 
     assets: [
