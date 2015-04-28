@@ -4,8 +4,14 @@
 # Ignore WebStorm IDE (and other IntelliJ platforms)
 .idea
 
+# Ignore SASS cache
+.sass-cache
+
 # Ignore node packages/modules
 node_modules
 
 # Ignore Bower packages
 bower_components
+
+# Ignore build, compile and deploy directories
+/build
