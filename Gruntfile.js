@@ -109,11 +109,33 @@ module.exports = function(grunt) {
               '<%= files_external.scripts %>',
               '<%= files_internal.scripts %>'
             ],
-            dest: '<%= dir.develop %>/scripts',
+            dest: '<%= dir.develop %>/assets/scripts',
             expand: true,
             flatten: true
           }
         ]
+      }
+
+    },
+
+
+    // -------------------------------------------------------------------------
+    // INDEX
+    // -------------------------------------------------------------------------
+
+    index: {
+
+      develop: {
+        dest: '<%= dir.develop %>',
+        src: {
+          styles: [
+            '<%= compass.develop.options.cssDir %>/**/*.css'
+          ],
+          scripts: [
+            '<%= files_external.scripts %>',
+            '<%= files_internal.scripts %>'
+          ]
+        }
       }
 
     }
@@ -140,7 +162,8 @@ module.exports = function(grunt) {
   grunt.registerTask('develop', [
     'clean:develop',
     'compass:develop',
-    'copy:develop'
+    'copy:develop',
+    'index:develop'
   ]);
 
   grunt.registerTask('compile', [ ]);
@@ -148,5 +171,29 @@ module.exports = function(grunt) {
   grunt.registerTask('deploy', [ ]);
 
   grunt.registerTask('default', [ ]);
+
+  // ---------------------------------------------------------------------------
+  // MULTITASKS
+  // ---------------------------------------------------------------------------
+
+  grunt.registerMultiTask('index', 'Creates an index.html file',
+    function() {
+      var filesStyle = grunt.file.expand(this.data.src.styles);
+      var filesScript = grunt.file.expand(this.data.src.scripts);
+
+      grunt.file.copy('src/index.html',
+        this.data.dest + '/index.html', {
+          process: function(contents) {
+            return grunt.template.process(contents, {
+              data: {
+                filesStyle: filesStyle,
+                filesScript: filesScript
+              }
+            });
+          }
+        }
+      );
+    }
+  );
 
 };
