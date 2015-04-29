@@ -26,6 +26,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-karma');
 
 
   /**
@@ -157,8 +158,18 @@ module.exports = function(grunt) {
         ],
         tasks: [
           'jshint:develop',
+          'karma:unit',
           'copy:develop',
           'index:develop'
+        ]
+      },
+
+      jsspec: {
+        files: [
+          'src/tests/**/*.spec.js'
+        ],
+        tasks: [
+          'karma:unit'
         ]
       }
 
@@ -216,6 +227,35 @@ module.exports = function(grunt) {
         }
       }
 
+    },
+
+
+    // -------------------------------------------------------------------------
+    // KARMA TEST RUNNER
+    // -------------------------------------------------------------------------
+
+    karma: {
+      
+      unit: {
+        options: {
+          autoWatch: false,
+          port: 9998,
+          runnerPort: 9999,
+          singleRun: true,
+          files: [
+            'src/tests/**/*.spec.js'
+          ],
+          frameworks: [
+            'jasmine'
+          ],
+          browsers: [
+            'Chrome'
+          ],
+          reporters: [
+            'mocha'
+          ]
+        }
+      }
     }
 
   };
@@ -238,6 +278,7 @@ module.exports = function(grunt) {
   grunt.renameTask('watch', 'delta');
   grunt.registerTask('watch', [
     'develop',
+    'karma:unit',
     'delta'
   ]);
 
