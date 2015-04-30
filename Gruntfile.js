@@ -23,8 +23,10 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-compass');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-karma');
 
@@ -46,6 +48,9 @@ module.exports = function(grunt) {
       '"app.config.js". File does not exists!');
   }
 
+  var _pathAssets = 'assets';
+  var _pathAssetsScripts = 'assets/scripts';
+
 
   /**
    * ***************************************************************************
@@ -55,6 +60,9 @@ module.exports = function(grunt) {
 
   var _taskConfig = {
 
+    pkg: grunt.file.readJSON('package.json'),
+
+
     // -------------------------------------------------------------------------
     // CLEAN
     // -------------------------------------------------------------------------
@@ -63,6 +71,10 @@ module.exports = function(grunt) {
 
       develop: [
         '<%= dir.develop %>'
+      ],
+
+      compile: [
+        '<%= dir.compile %>'
       ]
 
     },
@@ -80,7 +92,7 @@ module.exports = function(grunt) {
           outputStyle: 'compact',
           sassDir: '<%= files_internal.sass.dir_base %>',
           specify: '<%= files_internal.sass.file_base %>',
-          cssDir: '<%= dir.develop %>/assets/',
+          cssDir: '<%= dir.develop %>/' + _pathAssets +'/',
           raw: 'preferred_syntac = :scss\n'
         }
       },
@@ -91,9 +103,25 @@ module.exports = function(grunt) {
           outputStyle: 'compact',
           sassDir: '<%= files_internal.sass.dir_base %>',
           specify: '<%= files_internal.sass.file_base %>',
-          cssDir: '<%= dir.compile%>/assets/',
+          cssDir: '<%= dir.compile%>/' + _pathAssets +'/',
           raw: 'preferred_syntac = :scss\n'
         }
+      }
+
+    },
+
+
+    // -------------------------------------------------------------------------
+    // CONCATINATION
+    // -------------------------------------------------------------------------
+
+    concat: {
+
+      compile: {
+        src: [
+          '<%= files_internal.scripts %>'
+        ],
+        dest: '<%= dir.compile %>/' + _pathAssetsScripts + '/<%= pkg.name %>.js'
       }
 
     },
@@ -113,7 +141,21 @@ module.exports = function(grunt) {
               '<%= files_external.scripts %>',
               '<%= files_internal.scripts %>'
             ],
-            dest: '<%= dir.develop %>/assets/scripts',
+            dest: '<%= dir.develop %>/' + _pathAssetsScripts,
+            expand: true,
+            flatten: true
+          }
+        ]
+      },
+
+      compile: {
+        files: [
+          {
+            cwd: '.',
+            src: [
+              '<%= files_external.scripts_min %>'
+            ],
+            dest: '<%= dir.compile %>/' + _pathAssetsScripts,
             expand: true,
             flatten: true
           }
@@ -225,6 +267,19 @@ module.exports = function(grunt) {
             '<%= files_internal.scripts %>'
           ]
         }
+      },
+
+      compile: {
+        dest: '<%= dir.compile %>',
+        src: {
+          styles: [
+            '<%= compass.compile.options.cssDir %>/**/*.css'
+          ],
+          scripts: [
+            '<%= files_external.scripts_min %>',
+            '<%= dir.compile %>/' + _pathAssetsScripts + '/<%= pkg.name %>.min.js'
+          ]
+        }
       }
 
     },
@@ -235,7 +290,7 @@ module.exports = function(grunt) {
     // -------------------------------------------------------------------------
 
     karma: {
-      
+
       unit: {
         options: {
           autoWatch: false,
@@ -256,6 +311,43 @@ module.exports = function(grunt) {
           ]
         }
       }
+    },
+
+
+    // -------------------------------------------------------------------------
+    // MINIFICATION
+    // -------------------------------------------------------------------------
+
+    uglify: {
+
+      options: {
+        compress: {
+          booleans: true,
+          cascade: true,
+          comparisons: true,
+          conditionals: true,
+          dead_code: true,
+          drop_debugger: true,
+          evaluate: true,
+          if_return: true,
+          join_vars: true,
+          loops: true,
+          properties: true,
+          sequences: true,
+          side_effects: true,
+          unused: true,
+          warnings: true
+        }
+      },
+
+      compile: {
+        files: {
+          '<%= dir.compile %>/assets/scripts/<%= pkg.name %>.min.js': [
+            '<%= files_internal.scripts %>'
+          ]
+        }
+      }
+
     }
 
   };
@@ -289,7 +381,14 @@ module.exports = function(grunt) {
     'index:develop'
   ]);
 
-  grunt.registerTask('compile', [ ]);
+  grunt.registerTask('compile', [
+    'clean:compile',
+    'compass:compile',
+    'copy:compile',
+    'concat:compile',
+    'uglify:compile',
+    'index:compile'
+  ]);
 
   grunt.registerTask('deploy', [ ]);
 
@@ -301,8 +400,14 @@ module.exports = function(grunt) {
 
   grunt.registerMultiTask('index', 'Creates an index.html file',
     function() {
+      var _mapper = function(path, file) {
+        return path + '/' + file.substring(file.lastIndexOf('/') + 1, file.length);
+      };
+
       var filesStyle = grunt.file.expand(this.data.src.styles);
+      filesStyle = filesStyle.map(_mapper.bind(this, _pathAssets));
       var filesScript = grunt.file.expand(this.data.src.scripts);
+      filesScript = filesScript.map(_mapper.bind(this, _pathAssetsScripts));
 
       grunt.file.copy('src/index.html',
         this.data.dest + '/index.html', {
