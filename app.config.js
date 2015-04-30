@@ -61,6 +61,10 @@ module.exports = {
 
     ],
 
+    scripts_min: [
+
+    ],
+
     assets: [
 
     ],
