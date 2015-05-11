@@ -10,6 +10,9 @@
 
 module.exports = function(grunt) {
 
+  // require it at the top and pass in the grunt instance
+  require('time-grunt')(grunt);
+
   /**
    * ***************************************************************************
    * EXTERNAL MODULE IMPORT
