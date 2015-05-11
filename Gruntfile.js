@@ -20,6 +20,7 @@ module.exports = function(grunt) {
    */
 
   var _merge = require('lodash.merge');
+  var _shell = require('shelljs');
 
   // Note: Install new modules by adding them to 'package.json' file located
   //       at the root level and do 'npm install' in the terminal afterwards.
@@ -41,6 +42,9 @@ module.exports = function(grunt) {
    */
 
   var _appConfig;
+  var _appVersion = 'v0.0.0';
+  var _pathAssets = 'assets';
+  var _pathAssetsScripts = 'assets/scripts';
 
   // Load application specific configuration from app.config.js file,
   // if it exists
@@ -51,10 +55,14 @@ module.exports = function(grunt) {
       '"app.config.js". File does not exists!');
   }
 
-  var _pathAssets = 'assets';
-  var _pathAssetsScripts = 'assets/scripts';
-
-
+  // Get application version from Git tag
+  var gitTag = _shell.exec('git describe --tags --abbrev=0 --first-parent');
+  if (gitTag && gitTag.code === 0) {
+    _appVersion = gitTag.output.replace(/[ \f\t\v\r\n]*$/gm, '');
+    _appConfig.appVersion = _appVersion;
+  }
+  
+  
   /**
    * ***************************************************************************
    * TASK CONFIGURATION
@@ -124,7 +132,7 @@ module.exports = function(grunt) {
         src: [
           '<%= files_internal.scripts %>'
         ],
-        dest: '<%= dir.compile %>/' + _pathAssetsScripts + '/<%= pkg.name %>.js'
+        dest: '<%= dir.compile %>/' + _pathAssetsScripts + '/<%= pkg.name %>-' + _appVersion + '.js'
       }
 
     },
@@ -266,7 +274,7 @@ module.exports = function(grunt) {
           ],
           scripts: [
             '<%= files_external.scripts_min %>',
-            '<%= dir.compile %>/' + _pathAssetsScripts + '/<%= pkg.name %>.min.js'
+            '<%= dir.compile %>/' + _pathAssetsScripts + '/<%= pkg.name %>-<%= appVersion %>.min.js'
           ]
         }
       }
@@ -304,6 +312,23 @@ module.exports = function(grunt) {
 
 
     // -------------------------------------------------------------------------
+    // META INFORMATION
+    // -------------------------------------------------------------------------
+    
+    meta: {
+      
+      banner: '/**\n' +
+        ' * =============================================================================\n' + 
+        ' * <%= pkg.name %> - ' + _appVersion + '\n' +
+        ' * \n' +
+        ' * (c) Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
+        ' * =============================================================================\n' +
+        ' */\n'
+        
+    },
+    
+    
+    // -------------------------------------------------------------------------
     // MINIFICATION
     // -------------------------------------------------------------------------
 
@@ -326,12 +351,14 @@ module.exports = function(grunt) {
           side_effects: true,
           unused: true,
           warnings: true
-        }
+        },
+        
+        banner: '<%= meta.banner %>'
       },
 
       compile: {
         files: {
-          '<%= dir.compile %>/assets/scripts/<%= pkg.name %>.min.js': [
+          '<%= dir.compile %>/assets/scripts/<%= pkg.name %>-<%= appVersion %>.min.js': [
             '<%= files_internal.scripts %>'
           ]
         }
