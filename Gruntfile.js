@@ -226,21 +226,7 @@ module.exports = function(grunt) {
 
       options: {
         reporter: require('jshint-stylish'),
-
-        globals: {
-
-        },
-
-        curly: true,
-        eqeqeq: true,
-        forin: true,
-        futurehostile: true,
-        globalstrict: true,
-        latedef: true,
-        undef: true,
-        unused: true,
-
-        browser: true
+        jshintrc: '.jshintrc'
       },
 
       develop: [
