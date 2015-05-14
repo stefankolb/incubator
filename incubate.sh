@@ -66,6 +66,11 @@ git init
 git add * .gitignore *.jshintrc
 git commit -m "Initial commit"
 
+# Install local node and bower modules
+printf "\nInstalling node and bower modules/dependencies\n"
+npm install
+bower install
+
 # Clean-up
 rm -rf ${DIR_TEMP};
 
