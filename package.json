@@ -1,5 +1,5 @@
 {
-  "name": "APPLICATION_NAME",
+  "name": "{APPLICATION_NAME}",
   "version": "0.0.0",
   "description": "",
   "author": "Stefan Kolb <dev@stefankolb.de>",
