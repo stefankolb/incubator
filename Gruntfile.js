@@ -101,6 +101,7 @@ module.exports = function(grunt) {
         options: {
           environment: 'development',
           outputStyle: 'compact',
+          importPath: '<%= files_external.sass.importPaths %>',
           sassDir: '<%= files_internal.sass.dir_base %>',
           specify: '<%= files_internal.sass.file_base %>',
           cssDir: '<%= dir.develop %>/' + _pathAssets +'/',
@@ -112,6 +113,7 @@ module.exports = function(grunt) {
         options: {
           environment: 'production',
           outputStyle: 'compact',
+          importPath: '<%= files_external.sass.importPaths %>',
           sassDir: '<%= files_internal.sass.dir_base %>',
           specify: '<%= files_internal.sass.file_base %>',
           cssDir: '<%= dir.compile%>/' + _pathAssets +'/',
