@@ -71,6 +71,9 @@ printf "\nInstalling node and bower modules/dependencies\n"
 npm install
 bower install
 
+# Create Git tag for version numbering
+git tag v0.0.0
+
 # Clean-up
 rm -rf ${DIR_TEMP};
 
