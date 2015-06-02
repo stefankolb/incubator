@@ -33,6 +33,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-postcss');
 
 
   /**
@@ -331,6 +332,30 @@ module.exports = function(grunt) {
     
     
     // -------------------------------------------------------------------------
+    // POSTCSS PROCESSING
+    // -------------------------------------------------------------------------
+    
+    postcss: {
+      
+      options: {
+        processors: [
+          require('autoprefixer-core')({ browsers: 'last 1 version' })
+        ]
+      },
+      
+      develop: {
+        map: true,
+        src: '<%= dir.develop %>/' + _pathAssets + '/*.css'
+      },
+      
+      compile: {
+        src: '<%= dir.compile %>/' + _pathAssets + '/*.css'
+      }
+      
+    },
+    
+    
+    // -------------------------------------------------------------------------
     // MINIFICATION
     // -------------------------------------------------------------------------
 
@@ -395,6 +420,7 @@ module.exports = function(grunt) {
   grunt.registerTask('develop', [
     'clean:develop',
     'compass:develop',
+    'postcss:develop',
     'copy:develop',
     'index:develop'
   ]);
@@ -402,6 +428,7 @@ module.exports = function(grunt) {
   grunt.registerTask('compile', [
     'clean:compile',
     'compass:compile',
+    'postcss:compile',
     'copy:compile',
     'concat:compile',
     'uglify:compile',
