@@ -26,7 +26,6 @@ module.exports = function(grunt) {
   //       at the root level and do 'npm install' in the terminal afterwards.
 
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-compass');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -34,6 +33,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-postcss');
+  grunt.loadNpmTasks('grunt-sass');
 
 
   /**
@@ -88,39 +88,6 @@ module.exports = function(grunt) {
       compile: [
         '<%= dir.compile %>'
       ]
-
-    },
-
-
-    // -------------------------------------------------------------------------
-    // COMPASS / SASS / SCSS
-    // -------------------------------------------------------------------------
-
-    compass: {
-
-      develop: {
-        options: {
-          environment: 'development',
-          outputStyle: 'compact',
-          importPath: '<%= files_external.sass.importPaths %>',
-          sassDir: '<%= files_internal.sass.dir_base %>',
-          specify: '<%= files_internal.sass.file_base %>',
-          cssDir: '<%= dir.develop %>/' + _pathAssets +'/',
-          raw: 'preferred_syntac = :scss\n'
-        }
-      },
-
-      compile: {
-        options: {
-          environment: 'production',
-          outputStyle: 'compact',
-          importPath: '<%= files_external.sass.importPaths %>',
-          sassDir: '<%= files_internal.sass.dir_base %>',
-          specify: '<%= files_internal.sass.file_base %>',
-          cssDir: '<%= dir.compile%>/' + _pathAssets +'/',
-          raw: 'preferred_syntac = :scss\n'
-        }
-      }
 
     },
 
@@ -227,6 +194,15 @@ module.exports = function(grunt) {
         tasks: [
           'karma:unit'
         ]
+      },
+      
+      styles: {
+        files: [
+          'src/sass/**/*.scss'
+        ],
+        tasks: [
+          'sass:develop'
+        ]
       }
 
     },
@@ -260,7 +236,7 @@ module.exports = function(grunt) {
         dest: '<%= dir.develop %>',
         src: {
           styles: [
-            '<%= compass.develop.options.cssDir %>/**/*.css'
+            '<%= dir.develop %>/' + _pathAssets + '/styles/**/*.css'
           ],
           scripts: [
             '<%= files_external.scripts %>',
@@ -273,7 +249,7 @@ module.exports = function(grunt) {
         dest: '<%= dir.compile %>',
         src: {
           styles: [
-            '<%= compass.compile.options.cssDir %>/**/*.css'
+            '<%= dir.compile %>/' + _pathAssets + '/styles/**/*.css'
           ],
           scripts: [
             '<%= files_external.scripts_min %>',
@@ -356,6 +332,37 @@ module.exports = function(grunt) {
     
     
     // -------------------------------------------------------------------------
+    // SASS / SCSS
+    // -------------------------------------------------------------------------
+
+    sass: {
+
+      develop: {
+        options: {
+          includePaths: '<%= files_external.sass.importPaths %>',
+          outputStyle: 'compact',
+          sourceMap: false
+        },
+        files: {
+          '<%= dir.develop %>/assets/styles/styles.css': '<%= files_internal.sass.file_base %>'
+        }
+      },
+
+      compile: {
+        options: {
+          includePaths: '<%= files_external.sass.importPaths %>',
+          outputStyle: 'compressed',
+          sourceMap: false
+        },
+        files: {
+          '<%= dir.develop %>/assets/styles/styles.css': '<%= files_internal.sass.file_base %>'
+        }
+      }
+
+    },
+    
+    
+    // -------------------------------------------------------------------------
     // MINIFICATION
     // -------------------------------------------------------------------------
 
@@ -419,7 +426,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('develop', [
     'clean:develop',
-    'compass:develop',
+    'sass:develop',
     'postcss:develop',
     'copy:develop',
     'index:develop'
@@ -427,7 +434,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('compile', [
     'clean:compile',
-    'compass:compile',
+    'sass:compile',
     'postcss:compile',
     'copy:compile',
     'concat:compile',
