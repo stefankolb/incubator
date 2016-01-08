@@ -45,6 +45,7 @@ module.exports = function(grunt) {
   var _appConfig;
   var _appVersion = 'v0.0.0';
   var _pathAssets = 'assets';
+  var _pathAssetsStyles = 'assets/styles';
   var _pathAssetsScripts = 'assets/scripts';
 
   // Load application specific configuration from app.config.js file,
@@ -457,7 +458,7 @@ module.exports = function(grunt) {
       };
 
       var filesStyle = grunt.file.expand(this.data.src.styles);
-      filesStyle = filesStyle.map(_mapper.bind(this, _pathAssets));
+      filesStyle = filesStyle.map(_mapper.bind(this, _pathAssetsStyles));
       var filesScript = grunt.file.expand(this.data.src.scripts);
       filesScript = filesScript.map(_mapper.bind(this, _pathAssetsScripts));
 
