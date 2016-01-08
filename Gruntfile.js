@@ -237,7 +237,7 @@ module.exports = function(grunt) {
         dest: '<%= dir.develop %>',
         src: {
           styles: [
-            '<%= dir.develop %>/' + _pathAssets + '/styles/**/*.css'
+            '<%= dir.develop %>/' + _pathAssetsStyles + '/**/*.css'
           ],
           scripts: [
             '<%= files_external.scripts %>',
@@ -250,7 +250,7 @@ module.exports = function(grunt) {
         dest: '<%= dir.compile %>',
         src: {
           styles: [
-            '<%= dir.compile %>/' + _pathAssets + '/styles/**/*.css'
+            '<%= dir.compile %>/' + _pathAssetsStyles + '/**/*.css'
           ],
           scripts: [
             '<%= files_external.scripts_min %>',
@@ -322,11 +322,11 @@ module.exports = function(grunt) {
       
       develop: {
         map: true,
-        src: '<%= dir.develop %>/' + _pathAssets + '/*.css'
+        src: '<%= dir.develop %>/' + _pathAssetsStyles + '/*.css'
       },
       
       compile: {
-        src: '<%= dir.compile %>/' + _pathAssets + '/*.css'
+        src: '<%= dir.compile %>/' + _pathAssetsStyles + '/*.css'
       }
       
     },
